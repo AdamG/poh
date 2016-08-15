@@ -407,32 +407,6 @@ def _read_commands_files(commands_files):
 
     return commands_dictionary
 
-def _remove_output_dir(output_dir):
-    try:
-        error_out_on_remove = not shutil.rmtree.avoids_symlink_attacks
-    except AttributeError:
-        if 'POH_IGNORE_PY2_WARNS' in os.environ:
-            poh_ignore_py2_warns = os.environ['POH_IGNORE_PY2_WARNS']
-            LOG.debug('POH_IGNORE_PY2_WARNS was defined in execution'
-                      ' environment set to %r', poh_ignore_py2_warns)
-        else:
-            poh_ignore_py2_warns = 'no'
-        if poh_ignore_py2_warns == 'no':
-            import warnings
-            warnings.warn(_PY2_SYMLINK_ATTACK_WARN)
-        error_out_on_remove = False
-    if error_out_on_remove:
-        _show_error_messages([(
-            'Not removing temp directory at {!r}.'
-            ' Platform suceptible to symlink attacks.'
-            ' You can read more at:'
-            ' https://docs.python.org/3/library/shutil.html'
-            ' Please remove it manually.'
-        ).format(output_dir)])
-    else:
-        LOG.debug("Removing output directory at %r.", output_dir)
-        shutil.rmtree(output_dir)
-
 def _count_lines(filepath):
     num_line = 0
     with open(filepath, 'r') as input_file:
@@ -870,7 +844,7 @@ def run_poh(servers, commands, ssh_config=None, output_dir=None,
     if keep_output:
         print("\nOutput located at: {}".format(output_dir))
     else:
-        _remove_output_dir(output_dir)
+        shutil.rmtree(output_dir)
 
 def main_exe():
     """Do argument parsing and hand over to operational functions."""
