@@ -856,6 +856,10 @@ def main_exe():
 
     args = parser.parse_args()
 
+    if args.version:
+        print("the version with --version working")
+        sys.exit(0)
+
     if args.ssh_config:
         # TODO: change this to be a path, rather than a file
         args.ssh_config = args.ssh_config.name
