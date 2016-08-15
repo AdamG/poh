@@ -786,7 +786,6 @@ def redirect_streams(output_dir, quiet, transpose_output=False,
         return
 
     line_format = '{}:\t{}'
-    no_stderr = set()
 
     for srv, cmd_num, _, dest_stream, fpath in filepath_tuples:
         if not color:
@@ -796,13 +795,8 @@ def redirect_streams(output_dir, quiet, transpose_output=False,
         else:
             srv = _escaped_with(srv, ['fg_red'])
         if dest_stream is sys.stderr and os.stat(fpath).st_size == 0:
-            no_stderr.add((srv, cmd_num,))
+            continue
         elif dest_stream is sys.stdout and os.stat(fpath).st_size == 0:
-            if (srv, cmd_num,) in no_stderr:
-                dest_stream.write(line_format.format(srv, _escaped_with(
-                    '<EMPTY OUTPUT>', ['fg_yellow']
-                ) if color else '<EMPTY OUTPUT>'))
-                dest_stream.write('\n')
             continue
         elif dest_stream is sys.stderr:
             writefunc = lambda line: dest_stream.write(
